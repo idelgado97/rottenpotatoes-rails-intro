@@ -11,52 +11,44 @@ class MoviesController < ApplicationController
   end
 
   def index
-  
- 
 		# this will show all the available movies
-	@all_ratings = Movie.select(:rating).map(&:rating).uniq
-	
-	# now, need to get which ones they checked
-	@selected_ratings = @all_ratings
-	@movies = Movie.where({rating: @selected_ratings})
-	
-	if params[:ratings]
-		@selected_ratings= params[:ratings].keys
-		@movies = Movie.where({rating: @selected_ratings})
-	end
-	
-
-	
-	if params[:order] == "title"
-		@movies = Movie.where({rating: @selected_ratings}).order(:title)
-		@title_movie = "hilite"
-		@title_release = ""
-		
-		
-	elsif params[:order] == "release_date"
-		@movies = Movie.where({rating: @selected_ratings}).order(:release_date)
-		@title_release = "hilite"
-		@title_movie = ""
-	end
-	
-	
-	#if params[:order] != session[:order] or params[:ratings] != session[:ratings]
-     # session[:order] = params[:order]
-     # session[:ratings] = @selected_ratings
-     # redirect_to movies_path  
-    #end
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+    @all_ratings = Movie.select(:rating).map(&:rating).uniq
+  	
+  	# now, need to get which ones they checked
+    @selected_ratings = @all_ratings
+    @movies = Movie.where({rating: @selected_ratings})
+  	
+    if params[:ratings]
+      @selected_ratings = params[:ratings].keys || session[:ratings].keys
+    elsif session[:ratings]
+      @selected_ratings = session[:ratings].keys
+    end
+  	
+    @movies = Movie.where({rating: @selected_ratings})
+  	
+    @order= params[:order] || session[:order] 
+  	
+    if @order == "title"
+  	@movies = Movie.where({rating: @selected_ratings}).order(:title)
+  	@title_movie = "hilite"
+  	@title_release = ""
+  		
+    elsif @order == "release_date"
+  	@movies = Movie.where({rating: @selected_ratings}).order(:release_date)
+  	@title_release = "hilite"
+  	@title_movie = ""
+    end
+  	
+  	
+    if params[:order] != session[:order] or params[:ratings] != session[:ratings]
+     	session[:order] = params[:order]
+      	session[:ratings] = params[:ratings]
+       # redirect_to movies_path  
+    end
+  	
   end
-
+  
+  
   def new
     # default: render 'new' template
   end
